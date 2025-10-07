@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const ejsMate = require('ejs-mate');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const flash = require('connect-flash');
@@ -25,10 +26,20 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Session
+const mongoUrl = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/todoapp';
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'simple-todo-secret',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl,
+    collectionName: 'sessions',
+    ttl: 14 * 24 * 60 * 60 // 14 days
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 * 14 // 14 days
+  }
 }));
 
 // Passport
