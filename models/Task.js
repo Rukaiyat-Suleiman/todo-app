@@ -1,3 +1,5 @@
+// Compatibility shim: re-export the correctly-cased Task model
+module.exports = require('./Task');
 const mongoose = require('mongoose');
 
 const TaskSchema = new mongoose.Schema({
